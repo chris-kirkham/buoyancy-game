@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07dbeae8ae05a934083be9a6f5631731, type: 3}
   m_Name: WaveData
   m_EditorClassIdentifier: 
-  waveHeight: 5
-  waveSpeedXZ: {x: 15, y: 10}
-  waveFrequencyXZ: {x: 0.1, y: 0.025}
+  waveHeight: 10
+  waveSpeedXZ: {x: 50, y: 10}
+  waveFrequencyXZ: {x: 0.025, y: 0.01}

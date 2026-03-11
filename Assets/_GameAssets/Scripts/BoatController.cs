@@ -8,12 +8,14 @@ public class BoatController : MonoBehaviour
     [SerializeField] private float forwardSpeed = 1f;
     [SerializeField] private float steeringSpeed = 1f;
     [SerializeField] private float maxSteeringAngle = 90f;
+    [SerializeField] private RotateObject propRotateVFX; //simple prototype VFX!
 
     [SerializeField] private Vector2 moveInput;
 
+
     private void Update()
     {
-        SteerProp(moveInput.x * Time.deltaTime);
+        SteerProp(moveInput.x);
     }
 
     private void FixedUpdate()
@@ -34,22 +36,30 @@ public class BoatController : MonoBehaviour
 
     private void SteerProp(float steeringInput)
     {
+        if(steeringInput == 0f)
+        {
+            return;
+        }
+
         var currentY = propPivot.localEulerAngles.y;
-        var newY = Mathf.Clamp(currentY + (steeringInput * steeringSpeed), -maxSteeringAngle, maxSteeringAngle);
+        var newY = currentY + (steeringInput * steeringSpeed * Time.deltaTime);
+
         propPivot.localRotation = Quaternion.Euler(0f, newY, 0f);
     }
-
 
     private void OnDrawGizmos()
     {
         //draw prop pivot transform
-        Gizmos.matrix = propPivot.localToWorldMatrix;
-        Gizmos.color = Color.red;
-        Gizmos.DrawCube(Vector3.right * 0.5f, new Vector3(1f, 0.1f, 0.1f));
-        Gizmos.color = Color.green;
-        Gizmos.DrawCube(Vector3.up * 0.5f, new Vector3(0.1f, 1f, 0.1f));
-        Gizmos.color = Color.blue;
-        Gizmos.DrawCube(Vector3.forward * 0.5f, new Vector3(0.1f, 0.1f, 1f));
+        if(propPivot)
+        {
+            Gizmos.matrix = propPivot.localToWorldMatrix;
+            Gizmos.color = Color.red;
+            Gizmos.DrawCube(Vector3.right * 0.5f, new Vector3(1f, 0.1f, 0.1f));
+            Gizmos.color = Color.green;
+            Gizmos.DrawCube(Vector3.up * 0.5f, new Vector3(0.1f, 1f, 0.1f));
+            Gizmos.color = Color.blue;
+            Gizmos.DrawCube(Vector3.forward * 0.5f, new Vector3(0.1f, 0.1f, 1f));
+        }
 
         //draw forward force
         Gizmos.color = Color.yellow;
@@ -58,9 +68,18 @@ public class BoatController : MonoBehaviour
     }
 
 #region Input
-    private void OnMovement(InputValue value)
+    private void OnMove(InputValue value)
     {
         moveInput = value.Get<Vector2>();
+        if(moveInput.y == 0f)
+        {
+            propRotateVFX.enabled = false;
+        }
+        else
+        {
+            propRotateVFX.enabled = true;
+            propRotateVFX.SetRotationAxis((Vector3.forward * moveInput.y).normalized);
+        }
     }
 
 #endregion

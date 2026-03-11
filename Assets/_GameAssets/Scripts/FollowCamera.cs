@@ -4,6 +4,8 @@ public class FollowCamera : MonoBehaviour
 {
     [SerializeField] private Transform followTarget;
     [SerializeField] private float desiredDistance;
+    [SerializeField] private float minDistance;
+    [SerializeField] private float maxDistance;
     [SerializeField] private float desiredHeightAboveTarget;
     [SerializeField] private float positionFollowSpeed;
     [SerializeField] private float lookAtSpeed;

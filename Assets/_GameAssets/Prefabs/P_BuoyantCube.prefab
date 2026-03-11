@@ -181,19 +181,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dadea9bf7944dec468bec78a07932c22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  coll: {fileID: 4539322795576473364}
+  colliders:
+  - {fileID: 4539322795576473364}
   rb: {fileID: 5210914568882981140}
   sea: {fileID: 0}
   buoyancyMultiplier: 0.5
-  buoyancySamplePoints:
-  - {fileID: 2876791715652377250}
-  - {fileID: 7423875952004041616}
-  - {fileID: 4273783676903920622}
-  - {fileID: 6921707961844306107}
-  - {fileID: 8092856793728507930}
-  - {fileID: 4773020648734052112}
-  - {fileID: 9098467964791168511}
-  - {fileID: 6799052584287183260}
 --- !u!1 &1665417881922452837
 GameObject:
   m_ObjectHideFlags: 0

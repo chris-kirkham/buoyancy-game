@@ -5,11 +5,12 @@ using UnityEngine.Assertions;
 
 public class BuoyantRigidbody : MonoBehaviour
 {
-    [SerializeField] private Collider coll;
+    [SerializeField] private List<Collider> colliders;
     [SerializeField] private Rigidbody rb;
+    [SerializeField] private Transform manualCentreOfMass;
     [SerializeField] private Sea sea;
     [SerializeField] private float buoyancyMultiplier = 1f;
-    [SerializeField] private List<Transform> buoyancySamplePoints;
+    [SerializeField, Min(0.1f)] private float buoyancyVoxelDensity = 1f; //voxels per metre on each axis
 
     private List<VolumeVoxels.Voxel> volumeVoxels;
 
@@ -17,10 +18,15 @@ public class BuoyantRigidbody : MonoBehaviour
     private const float maxUpForce = 10f;
     private const float maxForceMagnitude = 10f;
 
-    private float buoyancyMultByVoxelDensity => buoyancyMultiplier / VolumeVoxels.VoxelDensity;
+    private float buoyancyMultByVoxelDensity => buoyancyMultiplier / buoyancyVoxelDensity;
 
     private void Awake()
     {
+        if(manualCentreOfMass)
+        {
+            rb.centerOfMass = rb.transform.InverseTransformPoint(manualCentreOfMass.position);
+        }
+
         GenerateVolumeVoxels();
     }
 
@@ -36,12 +42,7 @@ public class BuoyantRigidbody : MonoBehaviour
 
     private void GenerateVolumeVoxels()
     {
-        if(!coll)
-        {
-            return;
-        }
-
-        volumeVoxels = VolumeVoxels.GenerateVolumeVoxelsForCollider(coll);
+        volumeVoxels = VolumeVoxels.GenerateVolumeVoxelsForColliders(colliders, buoyancyVoxelDensity);
     }
 
     private void UpdateBuoyancyForce()
@@ -53,33 +54,34 @@ public class BuoyantRigidbody : MonoBehaviour
 
         if(volumeVoxels != null && volumeVoxels.Count > 0)
         {
+            var totalForce_WS = Vector3.zero;
+            var avgForcePosition_WS = Vector3.zero;
             foreach (var voxel in volumeVoxels)
             {
-                rb.AddForceAtPosition(GetBuoyancy(voxel), coll.transform.TransformPoint(voxel.position_LS));
+                //totalForce_WS += GetBuoyancy(voxel);
+                //avgForcePosition_WS += voxel.coll.transform.TransformPoint(voxel.position_LS);
+                rb.AddForceAtPosition(GetBuoyancy(voxel), voxel.coll.transform.TransformPoint(voxel.position_LS));
             }
+
+            //avgForcePosition_WS /= volumeVoxels.Count;
+            //rb.AddForceAtPosition(totalForce_WS, avgForcePosition_WS);
         }
         else //no volume voxels - add downward force at Rigidbody origin
         {
-            var voxel = new VolumeVoxels.Voxel
-            {
-                position_LS = Vector3.zero,
-                normal_LS = Vector3.down
-            };
-
+            var voxel = new VolumeVoxels.Voxel(colliders[0], Vector3.zero, Vector3.down);
             rb.AddForce(GetBuoyancy(voxel));
         }
-
     }
 
     private Vector3 GetBuoyancy(VolumeVoxels.Voxel voxel)
     {
-        if(!coll)
+        if(!sea || colliders == null || colliders.Count == 0)
         {
             return Vector3.zero;
         }
         
-        var position_WS = coll.transform.TransformPoint(voxel.position_LS);
-        var normal_WS = coll.transform.TransformDirection(voxel.normal_LS);
+        var position_WS = voxel.coll.transform.TransformPoint(voxel.position_LS);
+        var normal_WS = voxel.coll.transform.TransformDirection(voxel.normal_LS);
         var waveHeight = sea.GetWaveHeight_WS(position_WS);
         var heightDiff = waveHeight - position_WS.y;
         if (heightDiff > 0f)
@@ -92,11 +94,7 @@ public class BuoyantRigidbody : MonoBehaviour
             {
                 force = force.normalized * maxForceMagnitude;
             }
-            
-            //DEBUG
-            //var col = force.normalized;
-            //Debug.DrawRay(position_WS, -force, new Color(Mathf.Abs(col.x), Mathf.Abs(col.y), Mathf.Abs(col.z)));
-            
+
             return force;
         }
 
@@ -111,14 +109,14 @@ public class BuoyantRigidbody : MonoBehaviour
             foreach(var voxel in volumeVoxels)
             {
                 var force = GetBuoyancy(voxel);
-                var pos_WS = coll.transform.TransformPoint(voxel.position_LS);
-                var normal_WS = coll.transform.TransformDirection(voxel.normal_LS);
+                var pos_WS = voxel.coll.transform.TransformPoint(voxel.position_LS);
+                var normal_WS = voxel.coll.transform.TransformDirection(voxel.normal_LS);
                     
                 var usingBuoyancy = force.sqrMagnitude > Mathf.Epsilon;
                 var col = usingBuoyancy ? force.normalized : normal_WS;
                 Gizmos.color = new Color(Mathf.Abs(col.x), Mathf.Abs(col.y), Mathf.Abs(col.z));
                 Gizmos.DrawRay(pos_WS, -force);
-                Gizmos.DrawSphere(pos_WS, 0.1f / VolumeVoxels.VoxelDensity);
+                Gizmos.DrawSphere(pos_WS, 0.1f / buoyancyVoxelDensity);
                 if(!usingBuoyancy)
                 {
                     Gizmos.color = Color.white;
