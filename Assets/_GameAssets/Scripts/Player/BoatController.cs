@@ -4,14 +4,25 @@ using UnityEngine.InputSystem;
 public class BoatController : MonoBehaviour
 {
     [SerializeField] private Rigidbody rb;
-    [SerializeField] private Transform propPivot;
+    [SerializeField] private Transform propSteeringPivot;
+    [SerializeField] private Transform propUnderwaterTestPoint;
+    [SerializeField] private Transform driveForceOrigin;
+    [SerializeField] private Sea sea;
     [SerializeField] private float forwardSpeed = 1f;
+    [SerializeField] private ForceMode driveForceMode;
     [SerializeField] private float steeringSpeed = 1f;
     [SerializeField] private float maxSteeringAngle = 90f;
     [SerializeField] private RotateObject propRotateVFX; //simple prototype VFX!
 
     [SerializeField] private Vector2 moveInput;
 
+    private void OnEnable()
+    {
+        if(!rb)
+        {
+            TryGetComponent<Rigidbody>(out rb);
+        }
+    }
 
     private void Update()
     {
@@ -25,8 +36,15 @@ public class BoatController : MonoBehaviour
 
     private void DriveProp(float forwardInput)
     {
-        //TODO: only add force if prop is underwater
-        rb.AddForceAtPosition(propPivot.forward * GetDriveForce(forwardInput), propPivot.position);
+        if(!rb || !sea || !propUnderwaterTestPoint || !driveForceOrigin)
+        {
+            return;
+        }
+
+        if(sea.IsPointUnderwater(propUnderwaterTestPoint.position))
+        {
+            rb.AddForceAtPosition(propSteeringPivot.forward * GetDriveForce(forwardInput), driveForceOrigin.position, driveForceMode);
+        }
     }
 
     private float GetDriveForce(float forwardInput)
@@ -36,23 +54,23 @@ public class BoatController : MonoBehaviour
 
     private void SteerProp(float steeringInput)
     {
-        if(steeringInput == 0f)
+        if(steeringInput == 0f || !propSteeringPivot)
         {
             return;
         }
 
-        var currentY = propPivot.localEulerAngles.y;
+        var currentY = propSteeringPivot.localEulerAngles.y;
         var newY = currentY + (steeringInput * steeringSpeed * Time.deltaTime);
 
-        propPivot.localRotation = Quaternion.Euler(0f, newY, 0f);
+        propSteeringPivot.localRotation = Quaternion.Euler(0f, newY, 0f);
     }
 
     private void OnDrawGizmos()
     {
         //draw prop pivot transform
-        if(propPivot)
+        if(propSteeringPivot)
         {
-            Gizmos.matrix = propPivot.localToWorldMatrix;
+            Gizmos.matrix = propSteeringPivot.localToWorldMatrix;
             Gizmos.color = Color.red;
             Gizmos.DrawCube(Vector3.right * 0.5f, new Vector3(1f, 0.1f, 0.1f));
             Gizmos.color = Color.green;
@@ -67,11 +85,14 @@ public class BoatController : MonoBehaviour
         Gizmos.DrawCube(Vector3.forward * driveForce * 0.5f, new Vector3(0.1f, 0.1f, driveForce));
     }
 
-#region Input
-    private void OnMove(InputValue value)
+    private void UpdatePropRotationVFX(float forwardInput)
     {
-        moveInput = value.Get<Vector2>();
-        if(moveInput.y == 0f)
+        if (!propRotateVFX)
+        {
+            return;
+        }
+
+        if (moveInput.y == 0f)
         {
             propRotateVFX.enabled = false;
         }
@@ -80,6 +101,13 @@ public class BoatController : MonoBehaviour
             propRotateVFX.enabled = true;
             propRotateVFX.SetRotationAxis((Vector3.forward * moveInput.y).normalized);
         }
+    }
+
+#region Input
+    private void OnMove(InputValue value)
+    {
+        moveInput = value.Get<Vector2>();
+        UpdatePropRotationVFX(moveInput.y);
     }
 
 #endregion

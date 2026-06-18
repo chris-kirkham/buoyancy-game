@@ -37,6 +37,16 @@ public class Sea : MonoBehaviour
         return transform.position.y + waveData.GetWaveHeightOffset(position);
     }
 
+    public bool IsPointUnderwater(Vector3 position_WS)
+    {
+        if(!waveData)
+        {
+            return false;
+        }
+
+        return GetWaveHeight_WS(position_WS) > position_WS.y;
+    }
+
     private void OnDrawGizmosSelected()
     {
         if(!waveData)
