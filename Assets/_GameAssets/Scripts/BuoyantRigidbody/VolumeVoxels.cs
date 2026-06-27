@@ -46,13 +46,10 @@ public class VolumeVoxels
             allBounds.Encapsulate(coll.bounds);
         }
 
-        //TODO: this should cover everything (and be symmetrical from the RB's CoM) but can find a more efficient bound? Think about when I'm not tired
-        //Find closest multiple of voxel increment that covers bounds
-        var mult = allBounds.extents / inc;
-        mult = new Vector3(Mathf.Ceil(mult.x), Mathf.Ceil(mult.y), Mathf.Ceil(mult.z));
-        var extent = mult * inc; 
-        var min = com - extent;
-        var max = com + extent;
+        const float paddingMult = 2f;
+        var paddedExtents = allBounds.extents * paddingMult; 
+        var min = allBounds.center - paddedExtents;
+        var max = allBounds.center + paddedExtents;
 
         for (var x = min.x; x <= max.x; x += inc)
         {
@@ -226,6 +223,7 @@ public class VolumeVoxels
 
     private static bool IsInsideCollider(Vector3 point, Collider coll)
     {
+        Debug.DrawRay(point, Vector3.up * 0.1f, Color.white, 10f);
         return Vector3.Distance(coll.ClosestPoint(point), point) <= Mathf.Epsilon;
     }
 

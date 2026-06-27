@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06cf4323536788f4bbfab334eeef79dd, type: 3}
   m_Name: BuoyancyStats_TestCapsule
   m_EditorClassIdentifier: 
-  buoyancyUpMultiplier: 20
-  forceMultiplier: 2
-  maxDownForce: -200
-  maxUpForce: 1000
-  maxForceMagnitude: 1000
-  minLinearDamping: 1
-  minAngularDamping: 1
+  buoyancyUpMultiplier: 2
+  forceMultiplier: 10
+  maxDownForce: -100
+  maxUpForce: 100
+  maxForceMagnitude: 100
+  minLinearDamping: 0.5
+  minAngularDamping: 0.5
   maxLinearDamping: 5
   maxAngularDamping: 5
   selfRightingStrength: 0

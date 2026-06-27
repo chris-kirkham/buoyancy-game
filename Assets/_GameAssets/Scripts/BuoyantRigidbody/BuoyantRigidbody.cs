@@ -19,16 +19,30 @@ public class BuoyantRigidbody : MonoBehaviour
     [SerializeField, Min(0.1f)] private float surfacePointDensity = 1f;
     [SerializeField] private BuoyantRigidbodyStats stats;
 
-    [SerializeField] private List<VolumeVoxels.Voxel> volumeVoxels;
+    [SerializeField] private List<Voxel> volumeVoxels;
     [SerializeField] private List<VolumeVoxels.Voxel> surfacePoints;
-
-    //multiplier to try to make buoyancy multiplier have about the same effect regardless of voxel density
-    //TODO: test if just dividing by the number of generated voxels produces a better result
-    private float BuoyancyMultByVoxelDensity => stats.UpMultiplier / Mathf.Pow(buoyancyVoxelDensity, 3); 
 
     private void Awake()
     {
         GenerateVolumeVoxels();
+
+        if (!sea)
+        {
+            var seas = FindObjectsByType<Sea>(FindObjectsInactive.Exclude, FindObjectsSortMode.InstanceID);
+            if (seas.Length == 1)
+            {
+                sea = seas[0];
+            }
+            else if (seas.Length > 1)
+            {
+                Debug.LogWarning($">1 {nameof(Sea)} found in scene! Using first one.");
+                sea = seas[0];
+            }
+            else
+            {
+                Debug.LogError($"No {nameof(Sea)} set and none found in scene!");
+            }
+        }
     }
 
     private void FixedUpdate()
@@ -69,16 +83,29 @@ public class BuoyantRigidbody : MonoBehaviour
         //increase damping based on fraction of voxels underwater to simulate water drag (TODO: necessary?/better way to do this?)
         if (numVoxelsUnderwater > 0f)
         {
+            var totalForce = Vector3.zero;
+            var forcePos = Vector3.zero;
+            var forceVoxelsCount = 0;
             foreach(var voxel in volumeVoxels)
             {
                 var buoyancyForce = GetBuoyancyForce(voxel);
                 if(buoyancyForce.sqrMagnitude > Mathf.Epsilon)
                 {
-                    rb.AddForceAtPosition(buoyancyForce, rb.transform.TransformPoint(voxel.position_LS));
+                    forceVoxelsCount++;
+                    totalForce += buoyancyForce;
+                    forcePos += rb.transform.TransformPoint(voxel.position_LS);
+                    //rb.AddForceAtPosition(buoyancyForce, rb.transform.TransformPoint(voxel.position_LS));
                 }
             }
 
             var fractionVoxelsUnderwater = numVoxelsUnderwater / (float)volumeVoxels.Count;
+            if(forceVoxelsCount > 0)
+            {
+                var clampedForce = totalForce / forceVoxelsCount;
+                clampedForce = clampedForce.normalized * Mathf.Min(clampedForce.magnitude, stats.MaxForceMagnitude);
+                rb.AddForceAtPosition(clampedForce, forcePos / forceVoxelsCount);
+            }
+
             rb.linearDamping = Mathf.Lerp(stats.MinLinearDamping, stats.MaxLinearDamping, fractionVoxelsUnderwater);
             rb.angularDamping = Mathf.Lerp(stats.MinAngularDamping, stats.MaxAngularDamping, fractionVoxelsUnderwater);
         }
@@ -149,10 +176,10 @@ public class BuoyantRigidbody : MonoBehaviour
             yForce *= stats.UpMultiplier;
         }
 
-        var totalForce = new Vector3(normal_WS.x, yForce, normal_WS.z) * stats.ForceMultiplier;
-        totalForce.y = Mathf.Clamp(totalForce.y, stats.MaxDownForce, stats.MaxUpForce);
+        //var totalForce = new Vector3(normal_WS.x, yForce, normal_WS.z) * stats.ForceMultiplier;
+        var totalForce = Vector3.up * yForce * stats.ForceMultiplier;
+        //totalForce.y = Mathf.Clamp(totalForce.y, stats.MaxDownForce, stats.MaxUpForce);
 
-        totalForce /= Mathf.Pow(buoyancyVoxelDensity, 3); //to try to get similar forces regardless of number of voxels
         if (totalForce.magnitude > stats.MaxForceMagnitude)
         {
             totalForce = totalForce.normalized * stats.MaxForceMagnitude;

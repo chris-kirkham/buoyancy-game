@@ -1,15 +1,11 @@
 using UnityEngine;
 
+//simple follow camera script
 public class FollowCamera : MonoBehaviour
 {
+    [SerializeField] private Camera cam;
     [SerializeField] private Transform followTarget;
-    [SerializeField] private float desiredDistance;
-    [SerializeField] private float minDistance;
-    [SerializeField] private float maxDistance;
-    [SerializeField] private float desiredHeightAboveTarget;
-    [SerializeField] private float positionFollowSpeed;
-    [SerializeField] private float lookAtSpeed;
-    [SerializeField] private float desiredLookHeightAboveTarget;
+    [SerializeField] private FollowCameraStats stats;
 
     private void LateUpdate()
     {
@@ -20,13 +16,30 @@ public class FollowCamera : MonoBehaviour
 
         //position
         var flatTargetForward = Vector3.ProjectOnPlane(followTarget.forward, Vector3.up).normalized;
-        var desiredPos = followTarget.transform.position - (flatTargetForward * desiredDistance);
-        desiredPos += Vector3.up * desiredHeightAboveTarget;
-        transform.position = Vector3.Slerp(transform.position, desiredPos, Time.deltaTime * positionFollowSpeed);
+        var desiredPos = followTarget.transform.position - (flatTargetForward * stats.DesiredDistance);
+        desiredPos += Vector3.up * stats.DesiredHeightAboveTarget;
+        transform.position = Vector3.Slerp(transform.position, desiredPos, Time.deltaTime * stats.PositionFollowSpeed);
 
         //look
-        var lookPos = (followTarget.position + (Vector3.up * desiredLookHeightAboveTarget)) - transform.position;
-        var desiredLook = Quaternion.LookRotation(lookPos, Vector3.up);
-        transform.rotation = Quaternion.Slerp(transform.rotation, desiredLook, Time.deltaTime * lookAtSpeed);
+        var desiredLookPos = followTarget.position + followTarget.transform.TransformDirection(stats.TargetLookOffset_LS);
+        var desiredLookRotation = Quaternion.LookRotation(desiredLookPos - transform.position, Vector3.up);
+        transform.rotation = Quaternion.Slerp(transform.rotation, desiredLookRotation, Time.deltaTime * stats.LookAtSpeed);
+    }
+
+    public void SetFollowTarget(Transform target)
+    {
+        followTarget = target;
+    }
+
+    public void SetStats(FollowCameraStats stats)
+    {
+        if(stats)
+        {
+            this.stats = stats;
+        }
+        else
+        {
+            Debug.LogError($"Tried to set null {nameof(FollowCameraStats)}! Stats will not be changed.");
+        }
     }
 }

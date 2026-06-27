@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &207400913705371439
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7579099596015537425}
+  m_Layer: 0
+  m_Name: BoatRoot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7579099596015537425
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 207400913705371439}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8553773487781409896}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5918726285403222828
 GameObject:
   m_ObjectHideFlags: 0
@@ -9,6 +40,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8553773487781409896}
+  - component: {fileID: 1279123657671586297}
+  - component: {fileID: 1843691063482708417}
+  - component: {fileID: 2092423784785181187}
   m_Layer: 0
   m_Name: P_Player
   m_TagString: Untagged
@@ -30,8 +64,67 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4288339336176246074}
+  - {fileID: 7579099596015537425}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1279123657671586297
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5918726285403222828}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: d6871858e7f8a554684d8115d781a656, type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: Player
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
+--- !u!114 &1843691063482708417
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5918726285403222828}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 327051d676f481b40840ed80a6be057c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2092423784785181187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5918726285403222828}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bff12f73a38963a48982b046f2fda574, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boatSpawnParent: {fileID: 7579099596015537425}
+  followCam: {fileID: 2874016850318170903}
+  boatData: {fileID: 0}
+  input: {fileID: 1843691063482708417}
 --- !u!1001 &1936836785592743464
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -61,6 +154,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e3ba640d96595af4bae1835711b1f71b, type: 3}
+--- !u!114 &2874016850318170903 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4396509197632122175, guid: e3ba640d96595af4bae1835711b1f71b, type: 3}
+  m_PrefabInstance: {fileID: 1936836785592743464}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 652d7fbdfcc09bd41bd60c64c741b23f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &4288339336176246074 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2405550213955889938, guid: e3ba640d96595af4bae1835711b1f71b, type: 3}

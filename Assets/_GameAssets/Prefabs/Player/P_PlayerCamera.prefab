@@ -10,9 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6373112551018890302}
   - component: {fileID: 6106756658469795848}
-  - component: {fileID: 4301030808058070663}
   - component: {fileID: 4769826611471344638}
-  - component: {fileID: 3015433556103440213}
   m_Layer: 0
   m_Name: Camera
   m_TagString: MainCamera
@@ -86,14 +84,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &4301030808058070663
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5519626307517424993}
-  m_Enabled: 1
 --- !u!114 &4769826611471344638
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -138,26 +128,6 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
---- !u!114 &3015433556103440213
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5519626307517424993}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 652d7fbdfcc09bd41bd60c64c741b23f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  followTarget: {fileID: 0}
-  desiredDistance: 20
-  minDistance: 10
-  maxDistance: 50
-  desiredHeightAboveTarget: 10
-  positionFollowSpeed: 2
-  lookAtSpeed: 2
-  desiredLookHeightAboveTarget: 2
 --- !u!1 &7151981346488659278
 GameObject:
   m_ObjectHideFlags: 0
@@ -167,6 +137,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2405550213955889938}
+  - component: {fileID: 4396509197632122175}
   m_Layer: 0
   m_Name: P_PlayerCamera
   m_TagString: Untagged
@@ -190,3 +161,18 @@ Transform:
   - {fileID: 6373112551018890302}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4396509197632122175
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7151981346488659278}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 652d7fbdfcc09bd41bd60c64c741b23f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cam: {fileID: 6106756658469795848}
+  followTarget: {fileID: 0}
+  stats: {fileID: 11400000, guid: 765d4322350169241a408f4cd07b9c12, type: 2}

@@ -1,7 +1,6 @@
-using UnityEditor.Overlays;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "WaveData", menuName = "ScriptableObjects/WaveData")]
+[CreateAssetMenu(fileName = "WaveData", menuName = "Game/WaveData")]
 public class WaveData : ScriptableObject
 {
     [SerializeField] private float waveHeight;
